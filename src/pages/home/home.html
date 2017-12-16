@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>CEX.IO currency ticker</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+    <ion-refresher (ionRefresh)="refreshPrices($event)">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+
+  <div>
+      <ion-list>
+          <ion-item>
+            <ion-label>Pick coin</ion-label>
+            <ion-select [(ngModel)]="coin">
+              <ion-option value="btc">BTC</ion-option>
+              <ion-option value="eth">ETH</ion-option>
+              <ion-option value="bch">BCH</ion-option>
+              <ion-option value="btg">BTG</ion-option>    
+              <ion-option value="dash">DASH</ion-option>    
+              <ion-option value="xrp">XRP</ion-option>    
+              <ion-option value="zec">ZEC</ion-option>    
+              <ion-option value="ghs">GHS</ion-option>    
+
+
+            </ion-select>
+          </ion-item>
+        </ion-list>
+  </div>
+
+  <div> 
+      <ion-list>
+         <ion-item>
+           <ion-label>Choose currency</ion-label>
+           <ion-select [(ngModel)]="currency">
+             <ion-option value="usd">USD</ion-option>
+             <ion-option value="eur">EUR</ion-option>
+             <ion-option value="gbp">GBP</ion-option>
+             <ion-option value="rub">RUB</ion-option>
+   
+           </ion-select>
+         </ion-item>
+       </ion-list>
+   
+    </div>
+
+  <button ion-button [disabled]="!coin || !currency || !coin.length || !currency.length" (click)="addItem()">Add</button>
+
+  <ul>
+      <li *ngFor="let item of items; let i = index">
+          <ion-card>
+  
+              <ion-card-header>
+               {{item.header}}
+              </ion-card-header>
+            
+              <ion-card-content>
+                  {{item.value}}
+                </ion-card-content>
+            
+                <button ion-button color="dark" (click)="removeItem(item.header, i)">Remove</button>
+            </ion-card>
+      </li>
+    </ul>
+
+  
+  <button ion-button color="danger" [hidden]="!items.length" (click)="showConfirm()">Clear storage</button>
+
+
+</ion-content>
