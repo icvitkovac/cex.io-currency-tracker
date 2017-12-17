@@ -13,6 +13,8 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { LastPriceService } from './shared/LastPrice.service';
+import { MapToIterablePipe } from './shared/mapToIterable.pipe';
+
 
 
 @NgModule({
@@ -20,7 +22,9 @@ import { LastPriceService } from './shared/LastPrice.service';
     MyApp,
     AboutPage,
     HomePage,
-    TabsPage
+    TabsPage,
+    MapToIterablePipe,
+
   ],
   imports: [
     BrowserModule,

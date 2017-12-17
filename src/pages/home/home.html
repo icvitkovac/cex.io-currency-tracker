@@ -6,7 +6,7 @@
 
 <ion-content padding>
 
-    <ion-refresher (ionRefresh)="refreshPrices($event)">
+    <ion-refresher (ionRefresh)="getLastPrices($event)">
         <ion-refresher-content></ion-refresher-content>
       </ion-refresher>
 
@@ -46,27 +46,27 @@
    
     </div>
 
-  <button ion-button [disabled]="!coin || !currency || !coin.length || !currency.length" (click)="addItem()">Add</button>
+  <button ion-button [disabled]="!coin || !currency || !coin.length || !currency.length" (click)="addPair()">Add</button>
 
   <ul>
-      <li *ngFor="let item of items; let i = index">
+      <li *ngFor="let item of items  | mapToIterable; let i = index">
           <ion-card>
   
               <ion-card-header>
-               {{item.header}}
+               {{item[0]}}
               </ion-card-header>
             
               <ion-card-content>
-                  {{item.value}}
+                  {{item[1]}}
                 </ion-card-content>
             
-                <button ion-button color="dark" (click)="removeItem(item.header, i)">Remove</button>
+                <button ion-button color="dark" (click)="removePair(item[0])">Remove</button>
             </ion-card>
       </li>
     </ul>
 
   
-  <button ion-button color="danger" [hidden]="!items.length" (click)="showConfirm()">Clear storage</button>
+  <button ion-button color="danger" [hidden]="items.size == 0" (click)="showConfirm()">Clear storage</button>
 
 
 </ion-content>

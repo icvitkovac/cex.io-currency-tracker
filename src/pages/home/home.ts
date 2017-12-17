@@ -3,45 +3,66 @@ import { NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { AlertController } from 'ionic-angular';
 import { LastPriceService } from '../../app/shared/LastPrice.service';
-
-
+import { LastPrice } from '../../app/shared/lastPrice';
+import { MapToIterablePipe } from '../../app/shared/mapToIterable.pipe';
 
 
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
+  providers: [MapToIterablePipe]
 })
 export class HomePage {
 
-  public items = [];
+  public items = new Map();
   public coin = '';
   public currency = '';
 
-
-  addItem() {
+  addPair() {
     let key = `${this.coin}/${this.currency}`.toUpperCase();
     this.getLastPrice(key);
   }
 
-  removeItem(key: string, i: number) {
+  removePair(key: string, i: number) {
     this.storage.remove(key);
-    this.items.splice(i, 1);
+    this.items.delete(key);
   }
 
   getLastPrice(key: string) {
     this.lastPriceService.getLastPriceForPair(key)
       .subscribe(data => {
-        this.items.push({ header: key, value: data.lprice });
-        this.storage.set(key, data.lprice);
+        this.storePrice(key, data.lprice);
       })
   }
 
+  getLastPrices(refresher) {
+    this.lastPriceService.getLastPrices()
+      .subscribe(rawDataObj => {
+        this.extractRawPrices(rawDataObj.data);
+        if (refresher) refresher.complete();
+      })
+  }
 
-  refreshPrices(refresher) {
-    this.items = [];
+  extractRawPrices(rawData: LastPrice[]) {
+    rawData.forEach(element => {
+
+      let elementPair = `${element.symbol1}/${element.symbol2}`.toUpperCase()
+
+      if (this.items.has(elementPair)) {
+        this.storePrice(elementPair, element.lprice);
+      }
+    });
+
+  }
+
+  storePrice(key, value) {
+    this.items.set(key, value);
+    this.storage.set(key, value);
+  }
+
+  readStorageData() {
     this.storage.forEach((value, key) => {
-      this.getLastPrice(key);
-      if(refresher) refresher.complete();
+      this.items.set(key, value);
     })
   }
 
@@ -54,7 +75,7 @@ export class HomePage {
           text: 'OK',
           handler: () => {
             this.storage.clear();
-            this.items = [];
+            this.items.clear();
           }
         },
         {
@@ -65,12 +86,11 @@ export class HomePage {
     confirm.present();
   }
 
-
   constructor(public navCtrl: NavController, private storage: Storage, public alertCtrl: AlertController, private lastPriceService: LastPriceService) { }
 
   ngOnInit() {
-    this.refreshPrices(null);
+    this.readStorageData();
+    this.getLastPrices(null);
   }
-
 
 }

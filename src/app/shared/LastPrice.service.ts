@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
@@ -11,17 +11,31 @@ import { LastPrice } from './lastPrice';
 @Injectable()
 export class LastPriceService {
 
-  private baseUrl = 'https://cex.io/api/last_price';
+  private baseUrl = 'https://cex.io/api/';
+
   constructor(private http: HttpClient) { }
 
-
   getLastPriceForPair(key: string): Observable<LastPrice> {
-    const url = `${this.baseUrl}/${key}`;
+
+    const url = `${this.baseUrl}last_price/${key}`;
+
     return this.http.get<LastPrice>(url).pipe(
+
       catchError(this.handleError<LastPrice>(`getLastPriceForPair id=${key}`))
+
     );
   }
 
+  getLastPrices(): Observable<any> {
+
+    const url = `${this.baseUrl}last_prices/USD/EUR/GBP/RUB`;
+
+    return this.http.get<LastPrice[]>(url).pipe(
+
+      catchError(this.handleError(`getLastPrices`, []))
+
+    );
+  }
 
   /**
    * Handle Http operation that failed.
